@@ -2,7 +2,6 @@ package app.caturday.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import app.caturday.model.VideosResult
 
 class ProfileUploadedRepository(
 //	firebaseDatabase: FirebaseDatabase,

@@ -1,8 +1,8 @@
-package app.caturday.model
+package model
 
-import app.caturday.model.PreviewImage
-import app.caturday.model.User
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Video(
     val id: String? = null,
     val url: String? = null,

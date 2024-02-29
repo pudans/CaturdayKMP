@@ -4,14 +4,14 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     id("org.jetbrains.compose")
-//    kotlin("plugin.serialization")
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-       browser()
-    }
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//       browser()
+//    }
     
     androidTarget {
         compilations.all {
@@ -35,13 +35,12 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.animation)
             implementation(compose.materialIconsExtended)
-//            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-//            implementation(compose.components.resources)
+            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+            implementation(compose.components.resources)
 
-            api("moe.tlaster:precompose:1.6.0-beta02")
-//            api("moe.tlaster:precompose-molecule:1.6.0-beta02") // For Molecule intergration
-            api("moe.tlaster:precompose-viewmodel:1.6.0-beta02") // For ViewModel intergration
-            api("moe.tlaster:precompose-koin:1.6.0-beta02") // For Koin intergration
+            api(libs.precompose)
+            api(libs.precompose.viewmodel) // For ViewModel intergration
+            api(libs.precompose.koin) // For Koin intergration
 
             implementation(libs.kotlinx.serialization.json)
 //            implementation(libs.kotlinx.datetime)
@@ -49,12 +48,7 @@ kotlin {
 
             // Dependency Injection
             implementation(libs.koin.core)
-            implementation("io.insert-koin:koin-compose:3.6.0-wasm-alpha2")
-//            implementation("io.insert-koin:koin-ktor:3.6.0-wasm-alpha2")
-//            implementation("io.insert-koin:koin-core:3.6.0-wasm-alpha2")
-//            implementation("io.insert-koin:koin-core:3.6.0-wasm-alpha2")
-//            implementation("io.insert-koin:koin-core:3.6.0-wasm-alpha2")
-
+            implementation(libs.koin.compose)
         }
     }
 }

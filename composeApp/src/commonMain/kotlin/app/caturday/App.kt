@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +36,6 @@ import app.caturday.ui.ProfileScreen
 import app.caturday.ui.UploadVideoScreen
 import app.caturday.ui.theme.CaturdayTheme
 import org.koin.compose.KoinApplication
-import org.koin.core.KoinApplication
 import org.koin.dsl.module
 
 @Composable
@@ -101,42 +99,25 @@ fun App() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-//                NavHost(
-//                    navController = navController,
-//                    startDestination = Screen.Feed.route
-//                ) {
-//                    composable(Screen.Feed.route) { FeedTransitionAnimation { FeedScreen() } }
-//                    composable(Screen.Profile.route) { ProfileTransitionAnimation { ProfileScreen() } }
-//                }
                         NavHost(
-                            // Assign the navigator to the NavHost
                             navigator = navigator,
-                            // Navigation transition for the scenes in this NavHost, this is optional
                             navTransition = NavTransition(),
-                            // The start destination
                             initialRoute = "/feed",
                         ) {
-                            // Define a scene to the navigation graph
                             scene(
-                                // Scene's route path
                                 route = "/feed",
-                                // Navigation transition for this scene, this is optional
                                 navTransition = NavTransition(),
                             ) {
                                 FeedScreen()
                             }
                             scene(
-                                // Scene's route path
                                 route = "/upload",
-                                // Navigation transition for this scene, this is optional
                                 navTransition = NavTransition(),
                             ) {
                                 UploadVideoScreen {  }
                             }
                             scene(
-                                // Scene's route path
                                 route = "/profile",
-                                // Navigation transition for this scene, this is optional
                                 navTransition = NavTransition(),
                             ) {
                                 ProfileScreen()
@@ -147,8 +128,6 @@ fun App() {
             }
         }
     }
-
-
 }
 
 

@@ -4,19 +4,20 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 kotlin {
-    @OptIn(ExperimentalWasmDsl::class)
-    wasmJs {
-        moduleName = "composeApp"
-        browser {
-            commonWebpackConfig {
-                outputFileName = "composeApp.js"
-            }
-        }
-        binaries.executable()
-    }
+//    @OptIn(ExperimentalWasmDsl::class)
+//    wasmJs {
+//        moduleName = "composeApp"
+//        browser {
+//            commonWebpackConfig {
+//                outputFileName = "composeApp.js"
+//            }
+//        }
+//        binaries.executable()
+//    }
     
     androidTarget {
         compilations.all {
@@ -39,16 +40,19 @@ kotlin {
     
     sourceSets {
 
-        jsMain.dependencies {
-            implementation(libs.koin.core)
-            implementation("io.insert-koin:koin-compose:3.6.0-wasm-alpha2")
-        }
+//        jsMain.dependencies {
+//            implementation(libs.koin.core)
+//            implementation("io.insert-koin:koin-compose:3.6.0-wasm-alpha2")
+//        }
         
         androidMain.dependencies {
             implementation(libs.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-//            implementation(libs.koin.core)
-            implementation("io.insert-koin:koin-android:3.6.0-wasm-alpha2")
+            implementation(libs.ktor.client.okhttp)
+
+            implementation(libs.androidx.media3.exoplayer)
+
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -57,8 +61,19 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(projects.shared)
-            implementation("io.insert-koin:koin-compose:3.6.0-wasm-alpha2")
 
+            implementation(libs.koin.compose)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.logging)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.encoding)
+
+            implementation(libs.kamel.image)
+
+            implementation(libs.kotlinx.serialization.json)
         }
     }
 }
@@ -101,6 +116,6 @@ dependencies {
 }
 
 
-compose.experimental {
-    web.application {}
-}
+//compose.experimental {
+//    web.application {}
+//}

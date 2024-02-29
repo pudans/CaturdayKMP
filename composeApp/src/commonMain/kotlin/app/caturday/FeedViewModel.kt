@@ -2,8 +2,8 @@ package app.caturday
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import app.caturday.model.Video
-import app.caturday.model.VideosResult
+import model.Video
+import app.caturday.repository.VideosResult
 import app.caturday.repository.FeedRepository
 import app.caturday.repository.LikeRepository
 import app.caturday.state.FeedItemState
@@ -13,7 +13,6 @@ import moe.tlaster.precompose.viewmodel.ViewModel
 import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class FeedViewModel(
-//	private val mFirebaseAuth: FirebaseAuth,
 	private val mFeedRepository: FeedRepository,
 	private val mFeedLikeRepository: LikeRepository
 ) : ViewModel() {
@@ -22,7 +21,7 @@ class FeedViewModel(
 
 	init {
 		viewModelScope.launch {
-			mFeedRepository.getFeed()
+			mFeedRepository.feed
 				.collect { result ->
 					mFeedScreenState.value = when (result) {
 						is VideosResult.Data -> {

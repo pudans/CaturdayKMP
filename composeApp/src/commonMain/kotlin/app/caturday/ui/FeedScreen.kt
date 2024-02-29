@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package app.caturday.ui
 
@@ -7,10 +7,12 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -24,11 +26,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import app.caturday.FeedViewModel
 import app.caturday.state.FeedItemState
 import app.caturday.state.FeedScreenState
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
 import moe.tlaster.precompose.koin.koinViewModel
 
 @Composable
@@ -57,7 +62,7 @@ private fun FeedPager(
     items: List<FeedItemState>,
     onLikeClick: (String) -> Unit
 ) {
-    val pagerState = rememberPagerState() {
+    val pagerState = rememberPagerState {
         items.size
     }
 
@@ -166,6 +171,17 @@ private fun UploaderAvatar(avatarUrl: String) {
 //            .clip(CircleShape)
 //            .border(2.dp, Color.White, CircleShape)
 //    )
+
+    KamelImage(
+        resource = asyncPainterResource(avatarUrl),
+        contentDescription = "Profile",
+        onLoading = { progress -> CircularProgressIndicator(progress) },
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .border(2.dp, Color.White, CircleShape)
+    )
 }
 
 @Composable
@@ -245,69 +261,31 @@ fun FeedVideoPlayer(
     previewUrl: String,
     isPlayWhenReady: Boolean
 ) {
-//    val context = LocalContext.current
-
-//	val coroutineScope = rememberCoroutineScope()
 
     var playPauseState by remember { mutableStateOf(true) }
 
-    var previewImageState by remember { mutableStateOf(true) }
+    val previewImageState = mutableStateOf(true)
 
-    var progressState by remember { mutableStateOf(0.0f) }
+    val progressState = mutableStateOf(0.0f)
 
-    val exoPlayer = remember {
-
-
-//
 //		val cacheDataSourceFactory = CacheDataSourceFactory(CacheUtils.getCache(context), DefaultHttpDataSourceFactory("Catuday"))
 //
-//        val mediaSourceFactory: MediaSourceFactory = DefaultMediaSourceFactory(context)
-
-//        SimpleExoPlayer.Builder(context)
-//            .setMediaSourceFactory(mediaSourceFactory)
-//            .build().apply {
-//                playWhenReady = false
-//                videoScalingMode = C.VIDEO_SCALING_MODE_DEFAULT
-//                repeatMode = Player.REPEAT_MODE_ALL
-//
-//                addListener(object : Player.Listener {
-//                    override fun onRenderedFirstFrame() {
-//                        previewImageState = false
-//                    }
-//                })
-//            }
-    }
-
-    LaunchedEffect(videoUrl) {
-//        exoPlayer.setMediaItem(MediaItem.fromUri(videoUrl))
-//        exoPlayer.prepare()
-
-//		coroutineScope.launch {
-//			while (exoPlayer.playWhenReady) {
-//				val duration = exoPlayer.contentDuration
-//				val position = exoPlayer.contentPosition
-//
-//				Log.d("qwerttttt", "$position $duration")
-//
-//				delay(100L)
-//			}
-//		}
-    }
-
-//    LaunchedEffect(isPlayWhenReady, playPauseState) {
-//        exoPlayer.playWhenReady = isPlayWhenReady && playPauseState
-//    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .clickable { playPauseState = !playPauseState }
     ) {
-//        DisposableEffect(
-//            TextureView(exoPlayer)
-//        ) {
-//            onDispose { exoPlayer.release() }
-//        }
+
+        VideoPlayer(
+            "http://192.168.50.94:8080$videoUrl",
+            isPlayWhenReady,
+            playPauseState,
+            previewImageState,
+            progressState,
+            modifier = Modifier
+                .fillMaxSize()
+        )
 
         PreviewImage(previewImageState, previewUrl)
 
@@ -317,24 +295,10 @@ fun FeedVideoPlayer(
     }
 }
 
-//@Composable
-//private fun TextureView(exoPlayer: SimpleExoPlayer) {
-//    AndroidView(
-//        factory = {
-//            TextureView(it).apply {
-//                layoutParams = FrameLayout.LayoutParams(
-//                    ViewGroup.LayoutParams.MATCH_PARENT,
-//                    ViewGroup.LayoutParams.MATCH_PARENT
-//                )
-//                exoPlayer.setVideoTextureView(this)
-//            }
-//        })
-//}
-//
 @Composable
-private fun ProgressBar(progressState: Float) {
+private fun ProgressBar(progressState: MutableState<Float>) {
     LinearProgressIndicator(
-        progress = progressState,
+        progress = progressState.value,
         modifier = Modifier
             .fillMaxWidth()
             .height(4.dp)
@@ -347,20 +311,22 @@ private fun ProgressBar(progressState: Float) {
 
 @Composable
 private fun PreviewImage(
-    previewImageState: Boolean,
+    previewImageState: MutableState<Boolean>,
     previewUrl: String
 ) {
     AnimatedVisibility(
-        visible = previewImageState,
+        visible = previewImageState.value,
         modifier = Modifier.fillMaxSize(),
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-//        Image(
-//            contentScale = ContentScale.Crop,
-//            painter = rememberCoilPainter(request = previewUrl),
-//            contentDescription = ""
-//        )
+        KamelImage(
+            resource = asyncPainterResource("http://192.168.50.94:8080$previewUrl"),
+            contentDescription = "Profile",
+            onLoading = { progress -> CircularProgressIndicator(progress) },
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 

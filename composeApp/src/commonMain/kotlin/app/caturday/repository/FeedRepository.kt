@@ -1,30 +1,34 @@
 package app.caturday.repository
 
-import app.caturday.model.Video
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import app.caturday.model.VideosResult
+import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
+import model.Video
 
-class FeedRepository(
-//	firebaseDatabase: FirebaseDatabase
-) {
+class FeedRepository {
 
-	private val mChannelFlow = MutableStateFlow<VideosResult>(VideosResult.Loading)
+	private val client = HttpClient(CIO) {
 
-	init {
-//		firebaseDatabase.reference.addValueEventListener(object : ValueEventListener {
-//
-//			override fun onDataChange(snapshot: DataSnapshot) {
-//				val result = snapshot.children.mapNotNull { it.getValue<Video>() }.sortedBy { -it.uploadTimestamp }
-//				mChannelFlow.value = VideosResult.Data(result)
-//			}
-//
-//			override fun onCancelled(error: DatabaseError) {
-//				mChannelFlow.value = VideosResult.Error
-//			}
-//		})
-		mChannelFlow.value = VideosResult.Error
+		install(ContentNegotiation) {
+			json(Json {
+				prettyPrint = true
+				isLenient = true
+				ignoreUnknownKeys = true
+				explicitNulls = false
+			})
+		}
 	}
 
-	fun getFeed(): Flow<VideosResult> = mChannelFlow
+	val feed: Flow<VideosResult> = flow {
+		val response: HttpResponse = client.get("http://192.168.50.94:8080/videos")
+		val result: List<Video> = response.body()
+		emit(VideosResult.Data(result))
+	}
 }
